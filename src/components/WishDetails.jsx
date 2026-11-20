@@ -12,14 +12,22 @@ import {
   Share2,
   Copy,
   MessageCircle,
+  CheckCircle,
 } from 'lucide-react'
 
 import toast from 'react-hot-toast'
 
-function WishDetails({ wish, onClose, onContribute }) {
+function WishDetails({
+  wish,
+  onClose,
+  onContribute,
+  onDirectGift,
+}) {
   const [selectedAmount, setSelectedAmount] = useState(200)
   const [customAmount, setCustomAmount] = useState('')
   const [useCustom, setUseCustom] = useState(false)
+  const [showGiftConfirmation, setShowGiftConfirmation] =
+    useState(false)
 
   const percentage = Math.min(
     (Number(wish.collected || 0) /
@@ -30,7 +38,9 @@ function WishDetails({ wish, onClose, onContribute }) {
   const money = (value) =>
     Number(value || 0).toLocaleString('en-IN')
 
-  // GENERATE UNIQUE WISH LINK
+  const isFulfilled = Boolean(wish.fulfilled)
+
+  // GENERATE WISH LINK
   const getWishLink = () => {
     const url = new URL(window.location.href)
     url.searchParams.set('wish', String(wish.id))
@@ -49,7 +59,7 @@ function WishDetails({ wish, onClose, onContribute }) {
     }
   }
 
-  // SHARE ON WHATSAPP
+  // WHATSAPP SHARE
   const handleWhatsAppShare = () => {
     const link = getWishLink()
 
@@ -71,7 +81,7 @@ function WishDetails({ wish, onClose, onContribute }) {
 
     const shareData = {
       title: `${wish.title} | GIFTORA`,
-      text: `Help make this wish come true on GIFTORA! 💛`,
+      text: 'Help make this wish come true on GIFTORA! 💛',
       url: link,
     }
 
@@ -104,15 +114,38 @@ function WishDetails({ wish, onClose, onContribute }) {
       return
     }
 
+    if (isFulfilled) {
+      toast.error('This wish has already been fulfilled.')
+      return
+    }
+
     onContribute(wish.id, amount)
+  }
+
+  // CONFIRM DIRECT GIFT
+  const handleDirectGift = () => {
+    if (isFulfilled) {
+      toast.error('This wish has already been fulfilled.')
+      return
+    }
+
+    if (typeof onDirectGift !== 'function') {
+      toast.error('Direct gifting setup is not connected yet.')
+      return
+    }
+
+    onDirectGift(wish.id)
+    setShowGiftConfirmation(false)
   }
 
   return (
     <div className="details-overlay" onClick={onClose}>
+
       <div
         className="details-modal"
         onClick={(e) => e.stopPropagation()}
       >
+
         <button
           className="details-close"
           onClick={onClose}
@@ -161,6 +194,7 @@ function WishDetails({ wish, onClose, onContribute }) {
             {/* SHARE WISH */}
 
             <div className="wish-share-section">
+
               <h3>
                 <Share2 size={18} />
                 Share this wish
@@ -201,7 +235,7 @@ function WishDetails({ wish, onClose, onContribute }) {
 
           </div>
 
-          {/* CONTRIBUTION PANEL */}
+          {/* CONTRIBUTION AND DIRECT GIFT PANEL */}
 
           <div className="contribution-panel">
 
@@ -209,106 +243,236 @@ function WishDetails({ wish, onClose, onContribute }) {
               BE PART OF THIS STORY
             </span>
 
-            <h3>Help fulfil this wish</h3>
+            {isFulfilled ? (
 
-            <div className="details-amounts">
-              <strong>₹{money(wish.collected)}</strong>
-              <span>
-                raised of ₹{money(wish.targetAmount)}
-              </span>
-            </div>
+              <div className="fulfilled-message">
 
-            <div className="details-progress">
-              <div
-                style={{ width: `${percentage}%` }}
-              />
-            </div>
+                <CheckCircle size={38} />
 
-            <p className="details-percentage">
-              {percentage.toFixed(0)}% of the goal reached
-            </p>
+                <h3>This wish has been fulfilled!</h3>
 
-            <label className="contribution-label">
-              Choose your contribution
-            </label>
+                <p>
+                  Someone made this dream come true.
+                  Thank you for being part of the GIFTORA community.
+                </p>
 
-            <div className="contribution-options">
-              {[100, 200, 500, 1000].map((amount) => (
+              </div>
+
+            ) : (
+
+              <>
+
+                <h3>Help fulfil this wish</h3>
+
+                <div className="details-amounts">
+                  <strong>
+                    ₹{money(wish.collected)}
+                  </strong>
+
+                  <span>
+                    raised of ₹{money(wish.targetAmount)}
+                  </span>
+                </div>
+
+                <div className="details-progress">
+                  <div
+                    style={{ width: `${percentage}%` }}
+                  />
+                </div>
+
+                <p className="details-percentage">
+                  {percentage.toFixed(0)}% of the goal reached
+                </p>
+
+                {/* DIRECT GIFT */}
+
+                <div className="direct-gift-section">
+
+                  <span className="direct-gift-label">
+                    WANT TO MAKE THE WHOLE DREAM COME TRUE?
+                  </span>
+
+                  <button
+                    className="direct-gift-btn"
+                    onClick={() => setShowGiftConfirmation(true)}
+                  >
+                    <Gift size={19} />
+                    I'll Gift This Entire Wish
+                  </button>
+
+                  <p>
+                    Choose to fulfil this wish directly instead
+                    of making a smaller contribution.
+                  </p>
+
+                </div>
+
+                <div className="contribution-divider">
+                  <span>OR CONTRIBUTE A SMALLER AMOUNT</span>
+                </div>
+
+                <label className="contribution-label">
+                  Choose your contribution
+                </label>
+
+                <div className="contribution-options">
+
+                  {[100, 200, 500, 1000].map((amount) => (
+
+                    <button
+                      key={amount}
+                      type="button"
+                      className={
+                        !useCustom && selectedAmount === amount
+                          ? 'amount-option active'
+                          : 'amount-option'
+                      }
+                      onClick={() => {
+                        setSelectedAmount(amount)
+                        setUseCustom(false)
+                      }}
+                    >
+                      ₹{money(amount)}
+                    </button>
+
+                  ))}
+
+                </div>
+
                 <button
-                  key={amount}
                   type="button"
                   className={
-                    !useCustom && selectedAmount === amount
-                      ? 'amount-option active'
-                      : 'amount-option'
+                    useCustom
+                      ? 'custom-amount-toggle active'
+                      : 'custom-amount-toggle'
                   }
-                  onClick={() => {
-                    setSelectedAmount(amount)
-                    setUseCustom(false)
-                  }}
+                  onClick={() => setUseCustom(true)}
                 >
-                  ₹{money(amount)}
+                  Enter a custom amount
                 </button>
-              ))}
-            </div>
 
-            <button
-              type="button"
-              className={
-                useCustom
-                  ? 'custom-amount-toggle active'
-                  : 'custom-amount-toggle'
-              }
-              onClick={() => setUseCustom(true)}
-            >
-              Enter a custom amount
-            </button>
+                {useCustom && (
 
-            {useCustom && (
-              <div className="custom-amount-input">
-                <IndianRupee size={18} />
+                  <div className="custom-amount-input">
 
-                <input
-                  type="number"
-                  min="1"
-                  max="1000000"
-                  placeholder="Enter amount"
-                  value={customAmount}
-                  onChange={(e) =>
-                    setCustomAmount(e.target.value)
-                  }
-                />
-              </div>
+                    <IndianRupee size={18} />
+
+                    <input
+                      type="number"
+                      min="1"
+                      max="1000000"
+                      placeholder="Enter amount"
+                      value={customAmount}
+                      onChange={(e) =>
+                        setCustomAmount(e.target.value)
+                      }
+                    />
+
+                  </div>
+
+                )}
+
+                <button
+                  className="contribute-btn"
+                  onClick={handleContribution}
+                >
+                  <Heart size={18} />
+
+                  Contribute ₹
+                  {money(
+                    useCustom
+                      ? Number(customAmount || 0)
+                      : selectedAmount
+                  )}
+                </button>
+
+                <div className="contribution-note">
+                  <Sparkles size={16} />
+                  Every contribution makes a difference.
+                </div>
+
+                <p className="simulation-note">
+                  Demo only. Contributions and direct gifting
+                  are simulated. No real payment or purchase
+                  will be made.
+                </p>
+
+              </>
+
             )}
-
-            <button
-              className="contribute-btn"
-              onClick={handleContribution}
-            >
-              <Heart size={18} />
-
-              Contribute ₹
-              {money(
-                useCustom
-                  ? Number(customAmount || 0)
-                  : selectedAmount
-              )}
-            </button>
-
-            <div className="contribution-note">
-              <Sparkles size={16} />
-              Every contribution makes a difference.
-            </div>
-
-            <p className="simulation-note">
-              Demo only. This action simulates a contribution.
-              No real payment will be collected.
-            </p>
 
           </div>
 
         </div>
+
+        {/* DIRECT GIFT CONFIRMATION */}
+
+        {showGiftConfirmation && (
+
+          <div
+            className="gift-confirm-overlay"
+            onClick={() => setShowGiftConfirmation(false)}
+          >
+
+            <div
+              className="gift-confirm-modal"
+              onClick={(e) => e.stopPropagation()}
+            >
+
+              <button
+                className="gift-confirm-close"
+                onClick={() => setShowGiftConfirmation(false)}
+                aria-label="Close confirmation"
+              >
+                <X size={20} />
+              </button>
+
+              <div className="gift-confirm-icon">
+                <Gift size={32} />
+              </div>
+
+              <h3>Make this dream come true?</h3>
+
+              <p>
+                You're choosing to fulfil:
+              </p>
+
+              <strong className="gift-confirm-title">
+                {wish.title}
+              </strong>
+
+              <div className="gift-confirm-amount">
+                ₹{money(wish.targetAmount)}
+              </div>
+
+              <p className="gift-confirm-note">
+                This is a demo action. No money will be
+                collected and no actual item will be purchased.
+              </p>
+
+              <button
+                className="gift-confirm-yes"
+                onClick={handleDirectGift}
+              >
+                <Heart size={17} />
+                Yes, fulfil this wish
+              </button>
+
+              <button
+                className="gift-confirm-cancel"
+                onClick={() => setShowGiftConfirmation(false)}
+              >
+                Maybe later
+              </button>
+
+            </div>
+
+          </div>
+
+        )}
+
       </div>
+
     </div>
   )
 }

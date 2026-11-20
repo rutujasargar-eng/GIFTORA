@@ -12,6 +12,7 @@ import {
   Users,
   ShieldCheck,
   Plus,
+  CheckCircle,
 } from 'lucide-react'
 
 import toast, { Toaster } from 'react-hot-toast'
@@ -105,7 +106,7 @@ function App() {
     }
   })
 
-  // LOAD CONTRIBUTION DATA
+  // LOAD CONTRIBUTION AND FULFILMENT DATA
   const [wishOverrides, setWishOverrides] = useState(() => {
     try {
       const saved = JSON.parse(
@@ -185,7 +186,6 @@ function App() {
 
     setShowCreateWish(false)
 
-    // RESET FILTERS
     setSearchTerm('')
     setSelectedCategory('All')
 
@@ -209,6 +209,11 @@ function App() {
 
     if (!currentWish) {
       toast.error('Wish not found.')
+      return
+    }
+
+    if (currentWish.fulfilled) {
+      toast.error('This wish has already been fulfilled.')
       return
     }
 
@@ -237,6 +242,8 @@ function App() {
       ...wishOverrides,
 
       [wishId]: {
+        ...(wishOverrides[wishId] || {}),
+
         collected:
           Number(currentWish.collected || 0) + acceptedAmount,
 
@@ -257,6 +264,47 @@ function App() {
     toast.success(
       `Simulated contribution of ₹${formatCurrency(acceptedAmount)} added!`
     )
+  }
+
+  // ----------------------------------
+  // DIRECT GIFT / FULFIL WISH
+  // ----------------------------------
+
+  const handleDirectGift = (wishId) => {
+    const currentWish = allWishes.find(
+      (wish) => wish.id === wishId
+    )
+
+    if (!currentWish) {
+      toast.error('Wish not found.')
+      return
+    }
+
+    if (currentWish.fulfilled) {
+      toast.error('This wish has already been fulfilled.')
+      return
+    }
+
+    const updatedOverrides = {
+      ...wishOverrides,
+
+      [wishId]: {
+        ...(wishOverrides[wishId] || {}),
+        fulfilled: true,
+        fulfilledAt: new Date().toISOString(),
+      },
+    }
+
+    setWishOverrides(updatedOverrides)
+
+    localStorage.setItem(
+      'giftora-wish-overrides',
+      JSON.stringify(updatedOverrides)
+    )
+
+    setSelectedWishId(null)
+
+    toast.success('This wish has been marked as fulfilled! 🎁')
   }
 
   // ----------------------------------
@@ -678,6 +726,15 @@ function App() {
                       {wish.category}
                     </span>
 
+                    {/* FULFILLED STATUS */}
+
+                    {wish.fulfilled && (
+                      <span className="wish-fulfilled-badge">
+                        <CheckCircle size={13} />
+                        Fulfilled
+                      </span>
+                    )}
+
                     {/* LIKE BUTTON */}
 
                     <button
@@ -890,6 +947,7 @@ function App() {
           )}
           onClose={() => setSelectedWishId(null)}
           onContribute={handleContribute}
+          onDirectGift={handleDirectGift}
         />
 
       )}

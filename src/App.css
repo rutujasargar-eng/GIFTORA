@@ -1429,3 +1429,219 @@
   font-size: 12px;
   font-weight: 600;
 }
+
+/* DIRECT GIFT FEATURE */
+
+.direct-gift-section {
+  margin-top: 24px;
+  padding: 19px 15px;
+  border: 1px solid #e5d5b5;
+  border-radius: 12px;
+  background: #faf6ed;
+  text-align: center;
+}
+
+.direct-gift-label {
+  display: block;
+  margin-bottom: 13px;
+  color: #9b7942;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.direct-gift-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 13px;
+  border: none;
+  border-radius: 8px;
+  background: #29251f;
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+  transition: 0.2s ease;
+}
+
+.direct-gift-btn:hover {
+  background: #a98142;
+  transform: translateY(-2px);
+}
+
+.direct-gift-section > p {
+  margin: 11px 0 0;
+  color: #847969;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.contribution-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 23px 0;
+  color: #978b7b;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.7px;
+}
+
+.contribution-divider::before,
+.contribution-divider::after {
+  content: '';
+  height: 1px;
+  flex: 1;
+  background: #e9e1d5;
+}
+
+/* GIFT CONFIRMATION MODAL */
+
+.gift-confirm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(25, 22, 18, 0.65);
+}
+
+.gift-confirm-modal {
+  position: relative;
+  width: 100%;
+  max-width: 390px;
+  padding: 32px 25px;
+  border-radius: 17px;
+  background: #fffdf9;
+  text-align: center;
+  box-shadow: 0 20px 70px rgba(0, 0, 0, 0.2);
+}
+
+.gift-confirm-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  background: #f3eee6;
+  color: #554b3e;
+}
+
+.gift-confirm-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 65px;
+  height: 65px;
+  margin: 0 auto 19px;
+  border-radius: 50%;
+  background: #f2e7d0;
+  color: #a98142;
+}
+
+.gift-confirm-modal h3 {
+  margin: 0 0 12px;
+  color: #29251f;
+  font-family: 'Playfair Display', serif;
+  font-size: 23px;
+}
+
+.gift-confirm-modal > p {
+  color: #82796e;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.gift-confirm-title {
+  display: block;
+  margin: 12px 0;
+  color: #29251f;
+  font-size: 15px;
+}
+
+.gift-confirm-amount {
+  margin: 15px 0;
+  color: #a98142;
+  font-size: 27px;
+  font-weight: 700;
+}
+
+.gift-confirm-note {
+  padding: 10px;
+  border-radius: 8px;
+  background: #f5f0e7;
+  font-size: 11px !important;
+}
+
+.gift-confirm-yes {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 17px;
+  padding: 13px;
+  border: none;
+  border-radius: 8px;
+  background: #29251f;
+  color: white;
+  font-weight: 600;
+}
+
+.gift-confirm-yes:hover {
+  background: #a98142;
+}
+
+.gift-confirm-cancel {
+  width: 100%;
+  margin-top: 10px;
+  padding: 11px;
+  border: 1px solid #e8e1d5;
+  border-radius: 8px;
+  background: transparent;
+  color: #655b4e;
+}
+
+.fulfilled-message {
+  padding: 30px 12px;
+  text-align: center;
+  color: #94743d;
+}
+
+.fulfilled-message h3 {
+  margin: 14px 0 8px;
+  color: #29251f;
+}
+
+.fulfilled-message p {
+  color: #82796e;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+/* FULFILLED BADGE ON WISH CARD */
+
+.wish-fulfilled-badge {
+  position: absolute;
+  left: 14px;
+  bottom: 14px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 11px;
+  border-radius: 20px;
+  background: #e7f2e7;
+  color: #397344;
+  font-size: 11px;
+  font-weight: 700;
+}
