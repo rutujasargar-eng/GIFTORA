@@ -1400,3 +1400,32 @@
     padding: 12px 8px;
   }
 }
+
+/* GIFTORA LIKE BUTTON */
+
+.wish-heart {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-width: 48px;
+  padding: 8px 10px;
+  border-radius: 30px;
+  transition: all 0.2s ease;
+}
+
+.wish-heart.liked {
+  background: #fff0f0;
+  color: #d94f63;
+  border-color: #d94f63;
+}
+
+.wish-heart.liked:hover {
+  transform: scale(1.08);
+  background: #ffe4e7;
+}
+
+.wish-heart span {
+  font-size: 12px;
+  font-weight: 600;
+}
